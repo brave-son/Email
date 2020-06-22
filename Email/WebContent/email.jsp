@@ -1,5 +1,5 @@
-<%@page import="email.Mailer"%>
-<%@page import="email.SMTPAuthenticator"%>
+<%@page import="util.Mailer"%>
+<%@page import="util.SMTPAuthenticator"%>
 <%@ page language="java" contentType="text/html; charset=EUC-KR"
 	pageEncoding="EUC-KR"%>
 <%

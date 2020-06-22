@@ -1,5 +1,3 @@
-
-
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.ArrayList"%>
@@ -12,7 +10,7 @@
 <%@page import="java.net.URLEncoder"%>
 <%@page import="org.json.JSONArray"%>
 <%@page import="org.json.JSONObject"%>
-<%@page import="email.NetworkUtil"%>
+<%@page import="util.NetworkUtil"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="org.jsoup.select.Elements"%>
 <%@page import="java.io.IOException"%>
@@ -54,23 +52,24 @@ while (rs.next()) {
 rs.close();
 stmt.close();
 con.close();
-
+for(int i2 = 0; i2 <list.size();i2++){
+String address =list.get(i2).get("address");	
+	
 NetworkUtil nu = new NetworkUtil();
-String url1 = "https://dapi.kakao.com/v2/local/search/address.json";
+String url2 = "https://dapi.kakao.com/v2/local/search/address.json";
+String param = "?query=" + URLEncoder.encode(address, "utf-8");
 String appKey = "d4be7b479f4b4cbd99bd19ae87f88b4b";
+String result = nu.getKakao(url + param, appKey);
 
-for(int i = 0; i < list.size(); i++) {
-   Map<String, String> map = list.get(i);
-   String address = map.get("address");
-   String param = "?query=" + URLEncoder.encode(address, "utf-8");
-   String result = nu.getKakao(url1 + param, appKey);
-   JSONObject json = new JSONObject(result);
-   JSONArray documents = json.getJSONArray("documents");
-   for (int j = 0; j < documents.length(); j++) {
-      JSONObject doc = documents.getJSONObject(j);
-      String lat = doc.getString("y");
-      String lng = doc.getString("x");
-      System.out.printf("%s, %s\n", lat, lng);
-   }
+
+JSONObject json = new JSONObject(result);
+JSONArray documents = json.getJSONArray("documents");
+for (int i = 0; i < documents.length(); i++) {
+	JSONObject doc = documents.getJSONObject(i);
+	String lat = doc.getString("y");
+	String lng = doc.getString("x");
+	System.out.printf("%s, %s\n", lat, lng);}
+
+   
 }
 %>

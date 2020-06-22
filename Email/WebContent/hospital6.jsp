@@ -1,10 +1,18 @@
-<%@page import="java.sql.Connection"%>
+<%@page import="org.codehaus.jackson.map.ObjectMapper"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
+
+<%@page import="org.apache.jasper.tagplugins.jstl.core.If"%>
 <%@page import="java.sql.DriverManager"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.PreparedStatement"%>
-<%@ page language="java" contentType="text/html; charset=EUC-KR"
+<%@page import="java.sql.Connection"%>
+<%@ page language="java" contentType="application/json; charset=EUC-KR"
     pageEncoding="EUC-KR"%>
 <%
+response.setHeader("Access-Control-Allow-Origin", "*");
 String area =request.getParameter("area");
 if(area == null) area = "";
 String url = "jdbc:mysql://localhost:3306/java";
@@ -16,7 +24,7 @@ ResultSet rs = null;
 
 StringBuffer query = new StringBuffer();
 query.append("SELECT ID, SIDO, NAME, MEDICAL,");
-query.append(" ROOM, TEL, ADDRESS FROM HOSPITAL");
+query.append(" ROOM, TEL, ADDRESS, lat, lng FROM HOSPITAL");
 query.append(" WHERE ADDRESS LIKE CONCAT('%',?,'%')");
 
 Class.forName("com.mysql.jdbc.Driver");
@@ -26,8 +34,10 @@ con = DriverManager.getConnection(url, id, pw);
 stmt = con.prepareStatement(query.toString());
 stmt.setString(1,area);
 rs = stmt.executeQuery(); 
-out.print("<table border =1>");
+
+List<Map<String, String>> list = new ArrayList<>();
 while(rs.next()){
+	Map<String,String> map = new HashMap<>();
 	int id1 = rs.getInt("ID");
 	String name = rs.getString("NAME");
 	String SIDO = rs.getString("SIDO");	
@@ -35,23 +45,32 @@ while(rs.next()){
 	String ROOM = rs.getString("ROOM");
 	String TEL = rs.getString("TEL");
 	String ADDRESS = rs.getString("ADDRESS");
+	String lat = rs.getString("lat");
+	String lng = rs.getString("lng");
 	
-	out.print("<tr>");
-	out.print("<td>"+SIDO + "</TD>");
-	out.print("<td>"+name + "</TD>");	
-	out.print("<td>"+MEDICAL + "</TD>");
-	out.print("<td>"+ROOM + "</TD>");
-	out.print("<td>"+TEL + "</TD>");
-	out.print("<td>"+ADDRESS + "</TD>");
-	out.print("</tr>");
+	map.put("id", id1 +"");
+	map.put("SIDO",SIDO);
+	map.put("MEDICAL", MEDICAL);
+	map.put("ROOM",ROOM);
+	map.put("TEL", TEL);
+	map.put("ADDRESS", ADDRESS);
+	map.put("lat", lat);
+	map.put("lng", lng);
+	
+	
+	
+	
+	list.add(map);
 	
 	
 
 }
-	out.print("</table>");	
+	
 rs.close();
 stmt.close();
 con.close();
+ObjectMapper om = new ObjectMapper();
+out.print(om.writeValueAsString(list));
 
 
 

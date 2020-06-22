@@ -1,4 +1,4 @@
-package email;
+package util;
 
 import java.util.Properties;
 import javax.mail.Address;
